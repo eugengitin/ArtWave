@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ArtWave — Preview</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #F8F9FA;
+    color: #1A1A2E;
+    overflow: hidden;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .phone-frame {
+    width: 390px;
+    height: 844px;
+    background: #F8F9FA;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 25px 80px rgba(0,0,0,0.25), 0 0 0 8px #1a1a2e, 0 0 0 10px #333;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .notch {
+    width: 160px;
+    height: 34px;
+    background: #1a1a2e;
+    border-radius: 0 0 20px 20px;
+    margin: 0 auto;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+  }
+
+  /* Screens */
+  .screen {
+    display: none;
+    flex-direction: column;
+    height: 100%;
+    animation: fadeIn 0.3s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ============ ONBOARDING ============ */
+  #onboarding {
+    align-items: center;
+    justify-content: center;
+    padding: 60px 32px 40px;
+    background: #F8F9FA;
+  }
+  .onboarding-emoji { font-size: 80px; margin-bottom: 20px; }
+  .onboarding-title { font-size: 32px; font-weight: 800; text-align: center; margin-bottom: 12px; }
+  .onboarding-sub { font-size: 18px; color: #6B7280; text-align: center; line-height: 1.5; margin-bottom: 40px; }
+  .dots { display: flex; gap: 8px; margin-bottom: 28px; }
+  .dot { width: 8px; height: 8px; border-radius: 4px; background: #E5E7EB; }
+  .dot.active { width: 24px; background: #6C63FF; }
+  .btn-primary {
+    width: 100%;
+    padding: 16px;
+    background: #6C63FF;
+    color: #FFF;
+    border: none;
+    border-radius: 999px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.15s;
+  }
+  .btn-primary:active { transform: scale(0.97); }
+  .skip-btn {
+    position: absolute;
+    top: 60px;
+    right: 24px;
+    background: none;
+    border: none;
+    color: #6B7280;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+
+  /* ============ LOGIN ============ */
+  #login {
+    justify-content: center;
+    padding: 32px;
+  }
+  .login-header { text-align: center; margin-bottom: 40px; }
+  .login-logo { font-size: 64px; }
+  .login-title { font-size: 40px; font-weight: 800; color: #6C63FF; }
+  .login-sub { font-size: 16px; color: #6B7280; margin-top: 4px; }
+  .input-field {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    font-size: 16px;
+    font-family: inherit;
+    background: #FFF;
+    margin-bottom: 12px;
+    color: #1A1A2E;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-field:focus { border-color: #6C63FF; }
+  .input-field::placeholder { color: #9CA3AF; }
+  .login-form { margin-bottom: 24px; }
+  .login-form .btn-primary { border-radius: 12px; margin-top: 8px; }
+  .link-btn { background: none; border: none; color: #6C63FF; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; padding: 8px; display: block; margin: 0 auto; }
+  .login-footer { text-align: center; margin-top: 8px; }
+  .login-footer span { color: #6B7280; font-size: 16px; }
+  .login-footer button { background: none; border: none; color: #6C63FF; font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit; }
+
+  /* ============ MOOD SELECTION ============ */
+  #moods {
+    padding-top: 60px;
+  }
+  .moods-header {
+    padding: 8px 24px 8px;
+  }
+  .moods-greeting { font-size: 18px; color: #6B7280; font-weight: 500; }
+  .moods-title { font-size: 36px; font-weight: 800; }
+
+  .premium-banner {
+    margin: 8px 16px;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #6C63FF, #FF6584);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .premium-banner:active { transform: scale(0.98); }
+  .premium-banner-icon { font-size: 24px; }
+  .premium-banner-text { flex: 1; }
+  .premium-banner-text h4 { color: #FFF; font-size: 15px; font-weight: 700; margin-bottom: 2px; }
+  .premium-banner-text p { color: rgba(255,255,255,0.85); font-size: 12px; }
+  .premium-banner-arrow { color: #FFF; font-size: 22px; font-weight: 700; }
+
+  .mood-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    padding: 12px 20px 100px;
+    overflow-y: auto;
+    flex: 1;
+  }
+  .mood-card {
+    border-radius: 16px;
+    padding: 22px 16px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    min-height: 130px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .mood-card:active { transform: scale(0.95); }
+  .mood-card:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.18); transform: translateY(-2px); }
+  .mood-emoji { font-size: 32px; margin-bottom: 6px; }
+  .mood-label { font-size: 18px; font-weight: 700; color: #FFF; margin-bottom: 3px; }
+  .mood-desc { font-size: 11px; color: rgba(255,255,255,0.85); }
+
+  /* ============ TAB BAR ============ */
+  .tab-bar {
+    display: flex;
+    background: #FFF;
+    border-top: 1px solid #E5E7EB;
+    padding: 8px 0 20px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  .tab {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 4px;
+  }
+  .tab-icon { font-size: 22px; }
+  .tab-label { font-size: 12px; font-weight: 600; color: #6B7280; }
+  .tab.active .tab-label { color: #6C63FF; }
+
+  /* ============ VIDEO FEED ============ */
+  #videos {
+    padding-top: 50px;
+  }
+  .feed-header {
+    display: flex;
+    align-items: center;
+    padding: 12px 20px;
+    gap: 12px;
+  }
+  .back-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .feed-title { font-size: 22px; font-weight: 700; }
+  .feed-subtitle { padding: 0 20px 8px; font-size: 14px; color: #6B7280; }
+  .video-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px 20px 40px;
+  }
+  .video-card {
+    background: #FFF;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .video-card:active { transform: scale(0.98); }
+  .video-thumb {
+    width: 100%;
+    aspect-ratio: 16/9;
+    object-fit: cover;
+    display: block;
+    background: #E5E7EB;
+  }
+  .video-info { padding: 12px 14px; }
+  .video-title { font-size: 15px; font-weight: 600; margin-bottom: 4px; line-height: 1.3; }
+  .video-channel { font-size: 13px; color: #6B7280; }
+  .video-lock {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: #FFF;
+  }
+  .video-lock-icon { font-size: 28px; }
+  .video-lock-text { font-size: 13px; font-weight: 600; margin-top: 4px; }
+  .video-thumb-wrap { position: relative; }
+
+  /* ============ PLAYER ============ */
+  #player { padding-top: 50px; }
+  .player-video {
+    width: 100%;
+    aspect-ratio: 16/9;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .player-video iframe { width: 100%; height: 100%; border: none; }
+  .player-actions {
+    display: flex;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 20px;
+    border-radius: 999px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .action-btn:active { transform: scale(0.95); }
+  .action-btn.liked { background: #FEF2F2; border-color: #FECACA; color: #EF4444; }
+
+  /* ============ PAYWALL ============ */
+  #paywall {
+    padding: 50px 24px 30px;
+    justify-content: center;
+  }
+  .paywall-close {
+    position: absolute;
+    top: 55px;
+    right: 20px;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #6B7280;
+    cursor: pointer;
+  }
+  .paywall-header { text-align: center; margin-bottom: 28px; }
+  .paywall-emoji { font-size: 56px; margin-bottom: 12px; }
+  .paywall-title { font-size: 28px; font-weight: 800; }
+  .paywall-sub { font-size: 15px; color: #6B7280; margin-top: 6px; }
+  .paywall-features { margin-bottom: 28px; }
+  .paywall-feature {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .paywall-feature-icon { font-size: 22px; }
+  .paywall-feature-text { font-size: 15px; font-weight: 500; }
+  .paywall-plans { display: flex; gap: 12px; margin-bottom: 24px; }
+  .plan-card {
+    flex: 1;
+    padding: 16px;
+    border: 2px solid #E5E7EB;
+    border-radius: 12px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .plan-card.selected { border-color: #6C63FF; background: #F0EFFF; }
+  .plan-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .plan-price { font-size: 14px; color: #6B7280; }
+  .plan-badge {
+    display: inline-block;
+    background: #10B981;
+    color: #FFF;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 6px;
+    margin-top: 8px;
+  }
+  .paywall-cta {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(90deg, #6C63FF, #FF6584);
+    color: #FFF;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    margin-bottom: 12px;
+  }
+  .paywall-restore {
+    background: none;
+    border: none;
+    color: #6C63FF;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: block;
+    margin: 0 auto;
+  }
+
+  /* ============ PROFILE ============ */
+  #profile { padding: 60px 20px 100px; overflow-y: auto; }
+  .profile-title { font-size: 28px; font-weight: 800; margin-bottom: 20px; }
+  .profile-card {
+    background: #FFF;
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    margin-bottom: 20px;
+  }
+  .profile-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 36px;
+    background: #6C63FF;
+    color: #FFF;
+    font-size: 28px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .profile-name { font-size: 22px; font-weight: 700; }
+  .profile-email { font-size: 14px; color: #6B7280; margin-top: 4px; }
+  .profile-badge {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 4px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #E5E7EB;
+    color: #6B7280;
+  }
+  .profile-menu {
+    background: #FFF;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+  .profile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F3F4F6;
+    cursor: pointer;
+    transition: background 0.15s;
+    background: none;
+    border-left: none;
+    border-right: none;
+    border-top: none;
+    width: 100%;
+    font-family: inherit;
+    text-align: left;
+  }
+  .profile-menu-item:hover { background: #F9FAFB; }
+  .profile-menu-item:last-child { border-bottom: none; }
+  .menu-icon { font-size: 18px; margin-right: 14px; }
+  .menu-text { flex: 1; font-size: 15px; font-weight: 500; }
+  .menu-arrow { color: #9CA3AF; font-size: 16px; }
+  .signout-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 14px;
+    border: 1px solid #EF4444;
+    border-radius: 12px;
+    background: none;
+    color: #EF4444;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .version-text { text-align: center; margin-top: 16px; font-size: 12px; color: #9CA3AF; }
+
+  /* ============ FAVORITES ============ */
+  #favorites { padding: 60px 20px 100px; overflow-y: auto; }
+  .fav-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 16px; }
+  .fav-title { font-size: 28px; font-weight: 800; }
+  .fav-count { font-size: 14px; color: #6B7280; }
+  .fav-empty { text-align: center; padding-top: 120px; }
+  .fav-empty-emoji { font-size: 48px; margin-bottom: 14px; }
+  .fav-empty-title { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .fav-empty-sub { font-size: 16px; color: #6B7280; }
+
+  /* Mobile responsive */
+  @media (max-width: 430px) {
+    body { align-items: flex-start; }
+    .phone-frame {
+      width: 100vw;
+      height: 100vh;
+      border-radius: 0;
+      box-shadow: none;
+    }
+    .notch { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="phone-frame">
+  <div class="notch"></div>
+
+  <!-- ===== ONBOARDING ===== -->
+  <div id="onboarding" class="screen active">
+    <button class="skip-btn" onclick="showScreen('login')">Skip</button>
+    <div class="onboarding-emoji">🎨</div>
+    <div class="onboarding-title">Welcome to ArtWave</div>
+    <div class="onboarding-sub">Discover art videos curated to match exactly how you feel</div>
+    <div class="dots">
+      <div class="dot active"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+    <button class="btn-primary" onclick="showScreen('login')">Get Started</button>
+  </div>
+
+  <!-- ===== LOGIN ===== -->
+  <div id="login" class="screen">
+    <div class="login-header">
+      <div class="login-logo">🎨</div>
+      <div class="login-title">ArtWave</div>
+      <div class="login-sub">Art for every mood</div>
+    </div>
+    <div class="login-form">
+      <input class="input-field" type="email" placeholder="Email" value="preview@artwave.app">
+      <input class="input-field" type="password" placeholder="Password" value="••••••••">
+      <button class="btn-primary" onclick="showScreen('moods')">Sign In</button>
+      <button class="link-btn">Forgot Password?</button>
+    </div>
+    <div class="login-footer">
+      <span>Don't have an account? </span>
+      <button onclick="showScreen('moods')">Sign Up</button>
+    </div>
+  </div>
+
+  <!-- ===== MOOD SELECTION ===== -->
+  <div id="moods" class="screen">
+    <div class="moods-header">
+      <div class="moods-greeting">How are you feeling</div>
+      <div class="moods-title">right now?</div>
+    </div>
+    <div class="premium-banner" onclick="showScreen('paywall')">
+      <div class="premium-banner-icon">✨</div>
+      <div class="premium-banner-text">
+        <h4>Unlock All Videos</h4>
+        <p>Get unlimited access to all moods and videos</p>
+      </div>
+      <div class="premium-banner-arrow">→</div>
+    </div>
+    <div class="mood-grid" id="mood-grid"></div>
+    <div class="tab-bar">
+      <button class="tab active" onclick="showScreen('moods')"><span class="tab-icon">❤️</span><span class="tab-label">Moods</span></button>
+      <button class="tab" onclick="showScreen('favorites')"><span class="tab-icon">🔖</span><span class="tab-label">Favorites</span></button>
+      <button class="tab" onclick="showScreen('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+
+  <!-- ===== VIDEO FEED ===== -->
+  <div id="videos" class="screen">
+    <div class="feed-header">
+      <button class="back-btn" onclick="showScreen('moods')">←</button>
+      <div class="feed-title" id="feed-title"></div>
+    </div>
+    <div class="feed-subtitle" id="feed-subtitle"></div>
+    <div class="video-list" id="video-list"></div>
+  </div>
+
+  <!-- ===== PLAYER ===== -->
+  <div id="player" class="screen">
+    <div class="feed-header">
+      <button class="back-btn" onclick="showScreen('videos')">←</button>
+      <div class="feed-title">Now Playing</div>
+    </div>
+    <div class="player-video" id="player-embed"></div>
+    <div class="player-actions">
+      <button class="action-btn" id="like-btn" onclick="toggleLike()">🤍 Save</button>
+      <button class="action-btn" onclick="alert('Share link copied!')">📤 Share</button>
+    </div>
+  </div>
+
+  <!-- ===== PAYWALL ===== -->
+  <div id="paywall" class="screen">
+    <button class="paywall-close" onclick="showScreen('moods')">✕</button>
+    <div class="paywall-header">
+      <div class="paywall-emoji">✨</div>
+      <div class="paywall-title">Unlock ArtWave</div>
+      <div class="paywall-sub">Get unlimited access to art for every mood</div>
+    </div>
+    <div class="paywall-features">
+      <div class="paywall-feature"><span class="paywall-feature-icon">🎨</span><span class="paywall-feature-text">Unlimited videos for all moods</span></div>
+      <div class="paywall-feature"><span class="paywall-feature-icon">🔓</span><span class="paywall-feature-text">Access all 10 mood categories</span></div>
+      <div class="paywall-feature"><span class="paywall-feature-icon">📱</span><span class="paywall-feature-text">New content added weekly</span></div>
+      <div class="paywall-feature"><span class="paywall-feature-icon">⚡</span><span class="paywall-feature-text">No ads, ever</span></div>
+    </div>
+    <div class="paywall-plans">
+      <div class="plan-card selected" onclick="selectPlan(this)">
+        <div class="plan-name">Yearly</div>
+        <div class="plan-price">$29.99/year</div>
+        <div class="plan-badge">Save 50%</div>
+      </div>
+      <div class="plan-card" onclick="selectPlan(this)">
+        <div class="plan-name">Monthly</div>
+        <div class="plan-price">$4.99/month</div>
+      </div>
+    </div>
+    <button class="paywall-cta">Start Premium</button>
+    <button class="paywall-restore">Restore Purchases</button>
+  </div>
+
+  <!-- ===== PROFILE ===== -->
+  <div id="profile" class="screen">
+    <div class="profile-title">Profile</div>
+    <div class="profile-card">
+      <div class="profile-avatar">P</div>
+      <div class="profile-name">Preview User</div>
+      <div class="profile-email">preview@artwave.app</div>
+      <div class="profile-badge">Free Plan</div>
+    </div>
+    <div class="profile-menu">
+      <button class="profile-menu-item" onclick="showScreen('paywall')"><span class="menu-icon">💎</span><span class="menu-text">Upgrade to Premium</span><span class="menu-arrow">→</span></button>
+      <button class="profile-menu-item"><span class="menu-icon">📜</span><span class="menu-text">Watch History</span><span class="menu-arrow">→</span></button>
+      <button class="profile-menu-item"><span class="menu-icon">🔔</span><span class="menu-text">Notifications</span><span class="menu-arrow">→</span></button>
+      <button class="profile-menu-item"><span class="menu-icon">📋</span><span class="menu-text">Terms of Service</span><span class="menu-arrow">→</span></button>
+      <button class="profile-menu-item"><span class="menu-icon">🔒</span><span class="menu-text">Privacy Policy</span><span class="menu-arrow">→</span></button>
+    </div>
+    <button class="signout-btn" onclick="showScreen('login')">Sign Out</button>
+    <div class="version-text">ArtWave v1.0.0</div>
+    <div class="tab-bar">
+      <button class="tab" onclick="showScreen('moods')"><span class="tab-icon">❤️</span><span class="tab-label">Moods</span></button>
+      <button class="tab" onclick="showScreen('favorites')"><span class="tab-icon">🔖</span><span class="tab-label">Favorites</span></button>
+      <button class="tab active" onclick="showScreen('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+
+  <!-- ===== FAVORITES ===== -->
+  <div id="favorites" class="screen">
+    <div class="fav-header">
+      <div class="fav-title">Favorites</div>
+      <div class="fav-count">0 videos</div>
+    </div>
+    <div class="fav-empty">
+      <div class="fav-empty-emoji">💜</div>
+      <div class="fav-empty-title">No favorites yet</div>
+      <div class="fav-empty-sub">Videos you like will appear here</div>
+    </div>
+    <div class="tab-bar">
+      <button class="tab" onclick="showScreen('moods')"><span class="tab-icon">❤️</span><span class="tab-label">Moods</span></button>
+      <button class="tab active" onclick="showScreen('favorites')"><span class="tab-icon">🔖</span><span class="tab-label">Favorites</span></button>
+      <button class="tab" onclick="showScreen('profile')"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+const moods = [
+  { id:'anxious', label:'Anxious', emoji:'😟', gradient:'linear-gradient(135deg,#8B5CF6,#6D28D9)', desc:'Calming & meditative' },
+  { id:'sad', label:'Sad', emoji:'😢', gradient:'linear-gradient(135deg,#3B82F6,#1D4ED8)', desc:'Uplifting & comforting' },
+  { id:'meh', label:'Meh', emoji:'😐', gradient:'linear-gradient(135deg,#6B7280,#4B5563)', desc:'Light & easy-watching' },
+  { id:'ok', label:'OK', emoji:'🙂', gradient:'linear-gradient(135deg,#10B981,#059669)', desc:'Interesting & thought-provoking' },
+  { id:'happy', label:'Happy', emoji:'😊', gradient:'linear-gradient(135deg,#F59E0B,#D97706)', desc:'Vibrant & celebratory' },
+  { id:'energetic', label:'Energetic', emoji:'⚡', gradient:'linear-gradient(135deg,#EF4444,#DC2626)', desc:'Fast-paced & dynamic' },
+  { id:'frustrated', label:'Frustrated', emoji:'😠', gradient:'linear-gradient(135deg,#F97316,#EA580C)', desc:'Cathartic & intense' },
+  { id:'inspired', label:'Inspired', emoji:'💡', gradient:'linear-gradient(135deg,#EC4899,#DB2777)', desc:'Creative & masterful' },
+  { id:'lonely', label:'Lonely', emoji:'🌙', gradient:'linear-gradient(135deg,#6366F1,#4F46E5)', desc:'Warm & connecting' },
+  { id:'grateful', label:'Grateful', emoji:'🙏', gradient:'linear-gradient(135deg,#14B8A6,#0D9488)', desc:'Beautiful & nature-inspired' },
+];
+
+const mockVideos = {
+  anxious: [
+    { id:'77ZozI0rw7w', title:'Beautiful Relaxing Music - Calming Piano & Guitar', channel:'Soothing Relaxation' },
+    { id:'lE6RYpe9IT0', title:'Relaxing Watercolor Painting Process', channel:'Art Relaxation' },
+    { id:'1ZYbU82GVz4', title:'Zen Garden Art - Meditative Sand Patterns', channel:'Zen Art' },
+    { id:'hlWiI4xVXKY', title:'Bob Ross - Peaceful Valley', channel:'Bob Ross' },
+    { id:'9Q634rbsypE', title:'Japanese Ink Painting - Tranquil Mountains', channel:'Japanese Art' },
+  ],
+  sad: [
+    { id:'rUWxSEwctFU', title:'Most Beautiful Piano Pieces - Uplifting Classical', channel:'Classical Vibes' },
+    { id:'JGwWNGJdvx8', title:'Shape of You - Animated Art', channel:'Art Animation' },
+    { id:'2Vv-BfVoq4g', title:'Perfect - Visual Art Story', channel:'Visual Stories' },
+    { id:'RgKAFK5djSk', title:'Uplifting Art Compilation - See You Again', channel:'Art Compilations' },
+    { id:'fJ9rUzIMcZQ', title:'Bohemian Rhapsody - Painted Frame by Frame', channel:'Frame Art' },
+  ],
+  happy: [
+    { id:'ZbZSe6N_BXs', title:'Pharrell - Happy (Art Version)', channel:'Happy Art' },
+    { id:'ru0K8uYEZWw', title:'Vibrant Street Art Around the World', channel:'Street Art' },
+    { id:'OPf0YbXqDm0', title:'Colorful Paint Explosion in Slow Motion', channel:'Slow Mo Art' },
+    { id:'PT2_F-1esPk', title:'Festival of Colors - Art & Culture', channel:'Color Festival' },
+    { id:'hT_nvWreIhg', title:'Rainbow Art Challenge - Creating Joy', channel:'Joy Art' },
+  ],
+  inspired: [
+    { id:'CSMbjsGpkXU', title:'How Picasso Changed Everything', channel:'Art Masters' },
+    { id:'ISBeBuTFzr0', title:'A Day in the Studio with a Master Artist', channel:'Studio Life' },
+    { id:'36Y_ztEW1NE', title:'From Blank Canvas to Masterpiece', channel:'Art Process' },
+    { id:'HvVKJDYZJKQ', title:'10 Art Techniques That Will Blow Your Mind', channel:'Art Tips' },
+    { id:'EhDLB6OLrjE', title:'The Future of Digital Art', channel:'Digital Art' },
+  ],
+};
+
+// Default videos for moods without specific content
+const defaultVideos = mockVideos.happy;
+
+let currentMood = null;
+let currentVideoId = null;
+let liked = false;
+let previousScreen = 'moods';
+
+// Build mood grid
+const grid = document.getElementById('mood-grid');
+moods.forEach(m => {
+  grid.innerHTML += `
+    <div class="mood-card" style="background:${m.gradient}" onclick="openMood('${m.id}')">
+      <div class="mood-emoji">${m.emoji}</div>
+      <div class="mood-label">${m.label}</div>
+      <div class="mood-desc">${m.desc}</div>
+    </div>`;
+});
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (['moods','videos','player'].includes(id)) previousScreen = id;
+}
+
+function openMood(moodId) {
+  currentMood = moods.find(m => m.id === moodId);
+  const videos = mockVideos[moodId] || defaultVideos;
+
+  document.getElementById('feed-title').textContent = `${currentMood.emoji} ${currentMood.label}`;
+  document.getElementById('feed-subtitle').textContent = currentMood.desc;
+
+  const list = document.getElementById('video-list');
+  list.innerHTML = '';
+  videos.forEach((v, i) => {
+    const locked = i >= 3;
+    list.innerHTML += `
+      <div class="video-card" onclick="${locked ? "showScreen('paywall')" : `playVideo('${v.id}')`}">
+        <div class="video-thumb-wrap">
+          <img class="video-thumb" src="https://img.youtube.com/vi/${v.id}/hqdefault.jpg" alt="" loading="lazy">
+          ${locked ? `<div class="video-lock"><div class="video-lock-icon">🔒</div><div class="video-lock-text">Premium</div></div>` : ''}
+        </div>
+        <div class="video-info">
+          <div class="video-title">${v.title}</div>
+          <div class="video-channel">${v.channel}</div>
+        </div>
+      </div>`;
+  });
+
+  showScreen('videos');
+}
+
+function playVideo(videoId) {
+  currentVideoId = videoId;
+  liked = false;
+  document.getElementById('like-btn').className = 'action-btn';
+  document.getElementById('like-btn').innerHTML = '🤍 Save';
+  document.getElementById('player-embed').innerHTML =
+    `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  showScreen('player');
+}
+
+function toggleLike() {
+  liked = !liked;
+  const btn = document.getElementById('like-btn');
+  btn.className = liked ? 'action-btn liked' : 'action-btn';
+  btn.innerHTML = liked ? '❤️ Saved' : '🤍 Save';
+}
+
+function selectPlan(el) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>
